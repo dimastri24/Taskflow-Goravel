@@ -23,7 +23,7 @@ type Task struct {
 	// Assignees    []User        `gorm:"many2many:task_assigns;joinForeignKey:TaskID;joinReferences:UserID" json:"assignees,omitempty"`
 	Comments    []TaskComment `gorm:"foreignKey:TaskID" json:"comments,omitempty"`
 	Outputs     []TaskOutput  `gorm:"foreignKey:TaskID" json:"outputs,omitempty"`
-	TaskAssigns []TaskAssign  `gorm:"foreignKey:TaskID" json:"-"`
+	TaskAssigns []TaskAssign  `gorm:"foreignKey:TaskID;references:ID" json:"-"` // Define reference explicitly because TaskAssign use composite
 }
 
 // MarshalJSON otomatis mengubah struktur Task saat di-convert menjadi JSON API
