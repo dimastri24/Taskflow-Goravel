@@ -2,6 +2,7 @@ package config
 
 import (
 	"taskflow/app/facades"
+	"taskflow/app/models"
 )
 
 func init() {
@@ -13,7 +14,7 @@ func init() {
 		// reset options for your application. You may change these defaults
 		// as required, but they're a perfect start for most applications.
 		"defaults": map[string]any{
-			"guard": "user",
+			"guard": "api",
 		},
 
 		// Authentication Guards
@@ -28,16 +29,17 @@ func init() {
 		//
 		// Supported drivers: "jwt", "session"
 		"guards": map[string]any{
-			"user": map[string]any{
+			"api": map[string]any{
 				"driver":   "jwt",
-				"provider": "user",
+				"provider": "users",
 			},
 		},
 
 		// Supported: "orm"
 		"providers": map[string]any{
-			"user": map[string]any{
+			"users": map[string]any{
 				"driver": "orm",
+				"model":  &models.User{},
 			},
 		},
 	})

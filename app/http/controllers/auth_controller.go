@@ -82,3 +82,75 @@ func (r *AuthController) Register(ctx http.Context) http.Response {
 		"data":    newUser,
 	})
 }
+
+func (r *AuthController) Login(ctx http.Context) http.Response {
+	// 1. Validate Input
+	validator, err := ctx.Request().Validate(map[string]string{
+		"username": "required",
+		"password": "required",
+	})
+
+	if err != nil {
+		return ctx.Response().Json(http.StatusBadRequest, http.Json{
+			"message": "Validation failed",
+			"error":   err.Error(),
+		})
+	}
+
+	if validator.Fails() {
+		return ctx.Response().Json(http.StatusUnprocessableEntity, http.Json{
+			"message": "Validation errors",
+			"errors":  validator.Errors().All(),
+		})
+	}
+
+	username := ctx.Request().Input("username")
+	password := ctx.Request().Input("password")
+
+	// 2. Find the user by username (or modify query to check email if needed)
+	var user models.User
+	err = facades.Orm().Query().Where("username = ?", username).First(&user)
+	if err != nil || user.ID == 0 {
+		return ctx.Response().Json(http.StatusUnauthorized, http.Json{
+			"message": "Invalid username or password",
+		})
+	}
+
+	// 3. Verify the password using Goravel's Hash facade
+	if !facades.Hash().Check(password, user.Password) {
+		return ctx.Response().Json(http.StatusUnauthorized, http.Json{
+			"message": "Invalid username or password",
+		})
+	}
+
+	// 4. Generate the JWT Token natively using Goravel Auth
+	token, err := facades.Auth(ctx).Login(&user)
+	if err != nil {
+		return ctx.Response().Json(http.StatusInternalServerError, http.Json{
+			"message": "Could not generate authentication token",
+			"error":   err.Error(),
+		})
+	}
+
+	// 5. Respond with the token
+	return ctx.Response().Json(http.StatusOK, http.Json{
+		"message": "Login successful",
+		"token":   token,
+		"user":    user, // Will automatically omit the password
+	})
+}
+
+func (r *AuthController) Logout(ctx http.Context) http.Response {
+	// Panggil fungsi Logout bawaan Goravel Auth
+	err := facades.Auth(ctx).Logout()
+	if err != nil {
+		return ctx.Response().Json(http.StatusInternalServerError, http.Json{
+			"message": "Failed to logout, please try again",
+			"error":   err.Error(),
+		})
+	}
+
+	return ctx.Response().Json(http.StatusOK, http.Json{
+		"message": "Logout successful. Token has been blacklisted.",
+	})
+}
