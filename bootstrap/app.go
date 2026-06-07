@@ -13,7 +13,8 @@ func Boot() contractsfoundation.Application {
 		WithMigrations(Migrations).
 		WithRouting(func() {
 			routes.Web()
-			routes.Grpc()
+			routes.Api()
+			// routes.Grpc()
 		}).
 		WithProviders(Providers).
 		WithConfig(config.Boot).
