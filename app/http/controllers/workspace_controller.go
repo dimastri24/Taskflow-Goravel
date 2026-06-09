@@ -16,11 +16,9 @@ func NewWorkspaceController() *WorkspaceController {
 
 func (r *WorkspaceController) Index(ctx http.Context) http.Response {
 	// 1. Fetch authenticated user
-	userRef, ok := ctx.Value("auth_user").(*models.User)
-	if !ok || userRef == nil {
-		return ctx.Response().Json(http.StatusUnauthorized, http.Json{
-			"message": "Unauthorized",
-		})
+	userRef, errUser := utils.GetUser(ctx)
+	if errUser != nil {
+		return errUser
 	}
 
 	var results []models.WorkspaceWithCounts
@@ -65,12 +63,9 @@ func (r *WorkspaceController) Store(ctx http.Context) http.Response {
 	}
 
 	// 2. Retrieve the authenticated user from the context
-	// Goravel's http.Context has a Value() method just like standard context
-	userRef, ok := ctx.Value("auth_user").(*models.User)
-	if !ok || userRef == nil {
-		return ctx.Response().Json(http.StatusUnauthorized, http.Json{
-			"message": "Unauthorized: User session not found",
-		})
+	userRef, errUser := utils.GetUser(ctx)
+	if errUser != nil {
+		return errUser
 	}
 
 	// 3. Prepare the model data

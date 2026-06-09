@@ -2,6 +2,7 @@ package utils
 
 import (
 	"net/http"
+	"taskflow/app/models"
 
 	ghttp "github.com/goravel/framework/contracts/http"
 )
@@ -36,4 +37,23 @@ func BindAndValidate(ctx ghttp.Context, req interface{}, rules map[string]string
 
 	// Success! Return nil so the controller knows it can proceed.
 	return nil
+}
+
+func GetUser(ctx ghttp.Context) (*models.User, ghttp.Response) {
+	userVal := ctx.Value("auth_user")
+	if userVal == nil {
+		return nil, ctx.Response().Json(http.StatusUnauthorized, ghttp.Json{
+			"message": "Unauthorized: Session not found",
+		})
+	}
+
+	user, ok := userVal.(*models.User)
+	if !ok || user == nil {
+		return nil, ctx.Response().Json(http.StatusUnauthorized, ghttp.Json{
+			"message": "Unauthorized: Invalid user data",
+		})
+	}
+
+	// Sukses: user ada, response error nil
+	return user, nil
 }
