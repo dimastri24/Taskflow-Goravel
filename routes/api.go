@@ -11,6 +11,7 @@ import (
 func Api() {
 	authController := controllers.NewAuthController()
 	userController := controllers.NewUserController()
+	workspaceController := controllers.NewWorkspaceController()
 
 	// Route group for auth
 	facades.Route().Prefix("auth").Group(func(router route.Router) {
@@ -27,8 +28,8 @@ func Api() {
 		router.Get("/profile", userController.Profile)
 		// PUT	  /profile
 
-		// GET    /workspaces
-		// POST   /workspaces
+		router.Get("/workspaces", workspaceController.Index)
+		router.Post("/workspaces", workspaceController.Store)
 		// GET    /workspaces/{id}
 		// PUT    /workspaces/{id}
 		// DELETE /workspaces/{id}
