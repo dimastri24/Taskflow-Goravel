@@ -18,15 +18,39 @@ func Api() {
 		router.Post("/login", authController.Login)
 
 		router.Middleware(middleware.JwtAuth()).Group(func(authRouter route.Router) {
-			authRouter.Post("/logout", authController.Logout) // <--- Tambahkan ini
+			authRouter.Post("/logout", authController.Logout)
+			// POST	/refresh
 		})
 	})
 
 	facades.Route().Middleware(middleware.JwtAuth()).Group(func(router route.Router) {
-		// Endpoint Profile baru sesuai standar REST API
 		router.Get("/profile", userController.Profile)
+		// PUT	  /profile
 
-		// Kamu bisa tambah route terproteksi lainnya di dalam grup ini nanti, misal:
-		// router.Put("/profile", userController.UpdateProfile)
+		// GET    /workspaces
+		// POST   /workspaces
+		// GET    /workspaces/{id}
+		// PUT    /workspaces/{id}
+		// DELETE /workspaces/{id}
+
+		// GET	  /workspaces/{id}/members
+		// POST	  /workspaces/{id}/members
+
+		// GET    /workspaces/{id}/projects
+		// POST   /workspaces/{id}/projects
+
+		// GET    /projects
+		// GET    /projects/{id}
+
+		// GET    /projects/{id}/task
+		// POST   /projects/{id}/task
+
+		// GET    /tasks
+		// GET    /tasks/{id}
+		// PUT    /tasks/{id}
+		// DELETE /tasks/{id}
+
+		// GET    /tasks/{id}/comments
+		// POST   /tasks/{id}/comments
 	})
 }
