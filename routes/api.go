@@ -30,9 +30,9 @@ func Api() {
 
 		router.Get("/workspaces", workspaceController.Index)
 		router.Post("/workspaces", workspaceController.Store)
-		// GET    /workspaces/{id}
-		// PUT    /workspaces/{id}
-		// DELETE /workspaces/{id}
+		router.Get("/workspaces/{id}", workspaceController.Show)
+		router.Put("/workspaces/{id}", workspaceController.Update)
+		router.Delete("/workspaces/{id}", workspaceController.Destroy)
 
 		// GET	  /workspaces/{id}/members
 		// POST	  /workspaces/{id}/members
